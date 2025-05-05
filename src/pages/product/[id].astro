@@ -1,0 +1,45 @@
+---
+import Navbar from '../../components/navbar';
+import CardProduct from '../../components/products/cardProduct';
+import ProductOverviewGrid from '../../components/products/productOverviewGrid';
+
+import '../../../assets/scss/astro-ecommerce.scss';
+
+
+import { getProductById } from '../../lib/api/medusa/getProductById';
+import { getAllProducts } from '../../lib/api/medusa/getAllProducts'; // necesitas esta función
+
+export async function getStaticPaths() {
+  const products = await getAllProducts(); // obtén todos los productos
+  return products.map((product) => ({
+    params: { id: product.id },
+  }));
+}
+
+const { params } = Astro;
+const product = await getProductById(params.id);
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{product?.title || 'Product Not Found'}</title>
+</head>
+<body>
+  <Navbar />
+  <ProductOverviewGrid  
+        title={product.title}
+        full_description={product.description}
+      />  
+
+    <CardProduct 
+      thumb_src = {product.thumbnail}
+      thumb_alt = {product.thumb_alt}
+      color = {product.color}
+      title = {product.title}
+      price = {product.price}
+      position = "left"
+      />
+</body>
+</html>
